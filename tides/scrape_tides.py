@@ -1,8 +1,14 @@
 #!/usr/bin/python3
 
+# Scrape marine.ie for tide forcasts for a given station and year.
+# See the form at the URL below for the list of stations.
+
 import requests
 import datetime
 from bs4 import BeautifulSoup
+
+STATION = 'Dublin Port'
+YEAR = 2021
 
 def get_station_id(station_name):
   url = 'http://webapps.marine.ie/IrishTidesChartingApplication/TidePredictions.aspx'
@@ -54,11 +60,11 @@ def get_tide_table(station, dt):
   return data
 
 def main():
+  station_id = get_station_id(STATION)
+  if not station_id:
+    print('Unknown station: %s' % (STATION, ))
+    return
 
-  STATION = 'Dublin Port'
-  YEAR = 2021
-
-  station_id = get_station_id('Dublin Port')
   req_date = datetime.date(YEAR, 1, 1)
   sixdays = datetime.timedelta(days=6)
 

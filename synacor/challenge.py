@@ -10,12 +10,17 @@ class Machine(object):
     self._prog = []
     # Instruction pointer
     self._ptr = 0
-    # Terminal output
+    # Terminal i/o
     self._output = ''
+    self._input = ''
 
   @property
   def output(self):
-    return self._output
+    try:
+      return self._output
+    finally:
+      self._output = ''
+
 
   def _next(self):
     # return dereferenced next value, incrementing pointer
@@ -219,6 +224,17 @@ class Machine(object):
     output = chr(self._Value(self._m[self._ptr]))
     self._output = self._output + str(output)
     print('[%d] OUT %s' % (self._ptr, str(output)))
+
+  def op_20(self):
+    # in: 20 a
+    a = self._next_reg()
+    if self._input == '':
+      print(self.output)
+      inp = input(' > ')
+      self._input = inp + '\n'
+    # Now consume from the start of input.
+    self._r[a] = ord(self._input[0])
+    self._input = self._input[1:]
     
   def op_21(self):
     print('[%d] NOOP' % (self._ptr))

@@ -20,12 +20,12 @@ class Machine(object):
   def _next(self):
     # return dereferenced next value, incrementing pointer
     self._ptr += 1
-    return self._Value(self._prog[self._ptr])
+    return self._Value(self._m[self._ptr])
 
   def _next_reg(self):
     # Return register denoted by next value (assuming it is one).
     self._ptr += 1
-    return self._prog[self._ptr] % 32768
+    return self._m[self._ptr] % 32768
 
   def _jump(self, loc):
     # actually set pointer to previous position, as we increment before reading.
@@ -41,8 +41,11 @@ class Machine(object):
 
   def Execute(self, program):
     self._prog = program
+    # Load Program into memory
+    for i in range(0, len(program)):
+      self._m[i] = program[i]
     self._ptr = 0
-    instr = self._prog[self._ptr]
+    instr = self._m[self._ptr]
     while instr != 0:
       method = getattr(self, 'op_%d' % (instr), None)
       if method is None:
@@ -52,29 +55,29 @@ class Machine(object):
       if ret == False:
         return
       self._ptr += 1
-      instr = program[self._ptr]
+      instr = self._m[self._ptr]
 
   def op_1(self):
     # set: 1 a b : Set reg a to value of b
     a = self._next_reg()
     b = self._next()
-    print('[%d] SET a(reg %d) b(%d: %d)' % (self._ptr - 2, a, self._prog[self._ptr], b))
+    print('[%d] SET a(reg %d) b(%d: %d)' % (self._ptr - 2, a, self._m[self._ptr], b))
     self._r[a] = b
 
   def op_2(self):
     # push: 2 a: push a onto stack
     a = self._next()
     print('[%d] PUSH %d' % (self._ptr - 1, a))
-    print(' - Stack: %s' % (self._s))
     self._s.append(a)
+    print(' - Stack: %s' % (self._s))
 
   def op_3(self):
     # pop: 3, a:  remove the top element from the stack and write it into <a>; empty stack = error
     a = self._next_reg()
     elem = self._s.pop()
     print('[%d] POP %d -> reg:%d' % (self._ptr - 1, elem, a))
-    print(' - Stack: %s' % (self._s))
     self._r[a] = elem
+    print(' - Stack: %s' % (self._s))
  
   def op_4(self):
     # eq: 4 a b c: set <a> to 1 if <b> is equal to <c>; set it to 0 otherwise
@@ -99,8 +102,7 @@ class Machine(object):
       self._r[a] = 0
 
   def op_6(self):
-    self._ptr += 1
-    loc = self._Value(self._prog[self._ptr])
+    loc = self._next()
     print('[%d] JMP %d' % (self._ptr, loc))
     self._jump(loc)
 
@@ -108,7 +110,7 @@ class Machine(object):
     # jt: 7 a b : If a is nonzero jump to b
     a = self._next()
     b = self._next()
-    print('[%d] JT a(%d: %d) b(%d: %d)' % (self._ptr - 2, self._prog[self._ptr-1], a, self._prog[self._ptr], b))
+    print('[%d] JT a(%d: %d) b(%d: %d)' % (self._ptr - 2, self._m[self._ptr-1], a, self._m[self._ptr], b))
     if a != 0:
       self._jump(b)
 
@@ -116,7 +118,7 @@ class Machine(object):
     # jf: 7 a b : If a is zero jump to b
     a = self._next()
     b = self._next()
-    print('[%d] JF a(%d: %d) b(%d: %d)' % (self._ptr - 2, self._prog[self._ptr-1], a, self._prog[self._ptr], b))
+    print('[%d] JF a(%d: %d) b(%d: %d)' % (self._ptr - 2, self._m[self._ptr-1], a, self._m[self._ptr], b))
     if a == 0:
       self._jump(b)
 
@@ -184,19 +186,17 @@ class Machine(object):
     # rmem: 15 a b: read memory at address <b> and write it to <a>
     a = self._next_reg()
     b = self._next()
-    print('[%d] RMEM %d (%d) -> reg:%d' % (self._ptr - 2, b, self._prog[b], a))
-    self._r[a] = self._prog[b]
+    print('[%d] RMEM %d (%d) -> reg:%d' % (self._ptr - 2, b, self._m[b], a))
+    self._r[a] = self._m[b]
 
   def op_16(self):
     # wmem: 16 a b:  write the value from <b> into memory at address <a>
     a = self._next()
     b = self._next()
-    try: 
-      print('[%d] WMEM %d (%d) -> mem:%d' % (self._ptr - 2, b, self._prog[b], a))
-    except IndexError:
-      print('a %d b %d' % (a, b))
-      raise
-    self._prog[a] = b
+    if b not in self._m:
+      self._m[b] = 0
+    print('[%d] WMEM %d (%d) -> mem:%d' % (self._ptr - 2, b, self._m[b], a))
+    self._m[a] = b
 
   def op_17(self):
     # call: 17 a : write the address of the next instruction to the stack and jump to <a>
@@ -216,7 +216,7 @@ class Machine(object):
 
   def op_19(self):
     self._ptr += 1
-    output = chr(self._Value(self._prog[self._ptr]))
+    output = chr(self._Value(self._m[self._ptr]))
     self._output = self._output + str(output)
     print('[%d] OUT %s' % (self._ptr, str(output)))
     

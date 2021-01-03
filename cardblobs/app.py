@@ -1,6 +1,8 @@
 import os
 import cherrypy
 
+import tides_blob
+
 class Root(object):
   @cherrypy.expose
   def index(self):
@@ -11,12 +13,7 @@ class CardBlobIndex(object):
   def index(self):
     return "So many card blobs."
 
-class TidesIndex(object):
-  @cherrypy.expose
-  def index(self):
-    return 'tides go in and out and such.'
-
-class BusIndex(object):
+class BusBlob(object):
   @cherrypy.expose
   def index(self):
     return 'bus stuff goes here (if we ever get a bus again)'
@@ -27,8 +24,8 @@ def main():
 
   root = Root()
   root.cardblobs = CardBlobIndex()
-  root.cardblobs.tides = TidesIndex()
-  root.cardblobs.bus = BusIndex()
+  root.cardblobs.tides = tides_blob.TidesBlob()
+  root.cardblobs.bus = BusBlob()
 
   cherrypy.quickstart(root, config=cf)
 

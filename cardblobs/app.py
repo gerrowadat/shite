@@ -23,6 +23,9 @@ class BusBlob(object):
     return 'bus stuff goes here (if we ever get a bus again)'
 
 
+def make_like_a_teapot(*args, **kwargs):
+  return '<--- handle<br/>spout --->'
+
 def main():
   cf = os.path.join(os.path.dirname(__file__), 'cherrypy.conf')
 
@@ -30,6 +33,8 @@ def main():
   root.cardblobs = CardBlobIndex()
   root.cardblobs.tides = tides_blob.TidesBlob()
   root.cardblobs.bus = BusBlob()
+
+  cherrypy.config.update({'error_page.418': make_like_a_teapot})
 
   cherrypy.quickstart(root, config=cf)
 

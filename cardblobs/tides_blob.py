@@ -4,6 +4,14 @@ import cherrypy
 import irishtides
 
 
+class Error(Exception):
+  pass
+
+
+class RequestError(Error):
+  pass
+
+
 # List of TideCacheEntry
 _TIDE_CACHE = []
 
@@ -42,23 +50,28 @@ class TidesBlob(object):
   def __init__(self):
     self._tpf = irishtides.TidePredictionFetcher()
 
-  def _request_date(self, date):
+  def _request_date_or_today(self, date):
     """Return a datetime.date for either today or the supplied date."""
     if not date:
       return datetime.date.today()
+
+    error = None
 
     # Use the one true date format
     try:
       (year, month, day) = date.split('-')
     except ValueError:
-      return 'Specify date in YYYY-MM-DD or omit for today'
+      error = 'Specify date in YYYY-MM-DD or omit for today'
 
     if len(year) != 4 or len(month) != 2 or len(day) != 2:
-      return 'Specify date in YYYY-MM-DD or omit for today'
+      error = 'Specify date in YYYY-MM-DD or omit for today'
 
     for elem in (year, month, day):
       if not elem.isnumeric():
-        return 'Specify date in YYYY-MM-DD or omit for today'
+        error = 'Specify date in YYYY-MM-DD or omit for today'
+
+    if error:
+      raise RequestError(error)
 
     return datetime.date(year, month, day)
 
@@ -71,13 +84,14 @@ class TidesBlob(object):
 
     if station_name:
       if station_name not in _ID_CACHE:
-        return 'Unknown station %s. Stations Available: %s' % (station_name, [x for x in _ID_CACHE.keys()])
+        raise RequestError('Unknown station %s. Stations Available: %s' % (
+            station_name, [x for x in _ID_CACHE.keys()]))
       if not station_id:
         station_id = _ID_CACHE[station_name]
     else:
       if station_id not in _ID_CACHE.values():
-        return 'Unknown station %s.\n Stations Available: %s' % (
-            station_name, ['%s: %s' % (x, _ID_CACHE[x]) for x in _ID_CACHE.keys()])
+        raise RequestError('Unknown station %s.\n Stations Available: %s' % (
+            station_name, ['%s: %s' % (x, _ID_CACHE[x]) for x in _ID_CACHE.keys()]))
       if not station_name:
         station_name = [s_n for s_n in _ID_CACHE.keys() if _ID_CACHE[s_n] == station_name][0]
 
@@ -92,15 +106,10 @@ class TidesBlob(object):
       return cache_hits[0].tide_data
     return None
 
-  @cherrypy.expose
-  def index(self, station_name=None, station_id=None, date=None):
-    global _DATA_CACHE
-    global _ID_CACHE
-
+  def _get_tide_data(self, station_name, station_id, request_date):
+    global _TIDE_CACHE
     if station_name is None and station_id is None:
-      return 'Must specify station_name or station_id'
-
-    request_date = self._request_date(date)
+      raise RequestError('Must specify station_name or station_id')
 
     (station_name, station_id) = self._populate_station_info(station_name, station_id)
 
@@ -113,6 +122,33 @@ class TidesBlob(object):
     # Populate cache
     tc = TideCacheEntry(station_name, station_id, request_date, tide_data)
     _TIDE_CACHE.append(tc)
+
+    return tide_data
+
+  @cherrypy.expose
+  def index(self):
+    raise cherrypy.HTTPError(418)
+
+  @cherrypy.expose
+  def raw(self, station_name=None, station_id=None, date=None):
+    try:
+      request_date = self._request_date_or_today(date)
+      tide_data = self._get_tide_data(station_name, station_id, request_date)
+    except RequestError as e:
+      return 'Request error: %s' % (str(e))
+
+    ret = ''
+    for e in tide_data:
+      ret += '%s: %s\n' % (e, tide_data[e])
+    return ret
+
+  @cherrypy.expose
+  def today(self, station_name=None, station_id=None, date=None):
+    try:
+      request_date = self._request_date_or_today(date)
+      tide_data = self._get_tide_data(station_name, station_id, request_date)
+    except RequestError as e:
+      return 'Request error: %s' % (str(e))
 
     ret = ''
     for e in tide_data:

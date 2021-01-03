@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 
+
 class Machine(object):
   def __init__(self):
     # memory, registers, stack
     self._m = {}
-    self._r = [0,0,0,0,0,0,0,0]
+    self._r = [0, 0, 0, 0, 0, 0, 0, 0]
     self._s = []
     # Executing Program
     self._prog = []
@@ -20,7 +21,6 @@ class Machine(object):
       return self._output
     finally:
       self._output = ''
-
 
   def _next(self):
     # return dereferenced next value, incrementing pointer
@@ -57,7 +57,7 @@ class Machine(object):
         print('[%d] Encountered unknown instruction %d' % (self._ptr, instr))
         return
       ret = method()
-      if ret == False:
+      if ret is False:
         return
       self._ptr += 1
       instr = self._m[self._ptr]
@@ -83,7 +83,7 @@ class Machine(object):
     print('[%d] POP %d -> reg:%d' % (self._ptr - 1, elem, a))
     self._r[a] = elem
     print(' - Stack: %s' % (self._s))
- 
+
   def op_4(self):
     # eq: 4 a b c: set <a> to 1 if <b> is equal to <c>; set it to 0 otherwise
     a = self._next_reg()
@@ -115,7 +115,7 @@ class Machine(object):
     # jt: 7 a b : If a is nonzero jump to b
     a = self._next()
     b = self._next()
-    print('[%d] JT a(%d: %d) b(%d: %d)' % (self._ptr - 2, self._m[self._ptr-1], a, self._m[self._ptr], b))
+    print('[%d] JT a(%d: %d) b(%d: %d)' % (self._ptr - 2, self._m[self._ptr - 1], a, self._m[self._ptr], b))
     if a != 0:
       self._jump(b)
 
@@ -123,7 +123,7 @@ class Machine(object):
     # jf: 7 a b : If a is zero jump to b
     a = self._next()
     b = self._next()
-    print('[%d] JF a(%d: %d) b(%d: %d)' % (self._ptr - 2, self._m[self._ptr-1], a, self._m[self._ptr], b))
+    print('[%d] JF a(%d: %d) b(%d: %d)' % (self._ptr - 2, self._m[self._ptr - 1], a, self._m[self._ptr], b))
     if a == 0:
       self._jump(b)
 
@@ -213,7 +213,7 @@ class Machine(object):
   def op_18(self):
     # ret: 18 : pop stack and jump to it, halt on empty stack.
     if len(self._s) == 0:
-      print ('[%d] RET (empty stack)' % (self._ptr))
+      print('[%d] RET (empty stack)' % (self._ptr))
       return False
     elem = self._s.pop()
     print('[%d] RET %d' % (self._ptr, elem))
@@ -235,11 +235,9 @@ class Machine(object):
     # Now consume from the start of input.
     self._r[a] = ord(self._input[0])
     self._input = self._input[1:]
-    
+
   def op_21(self):
     print('[%d] NOOP' % (self._ptr))
-
-
 
 
 def main():
@@ -250,18 +248,19 @@ def main():
       raw.append(byte)
       byte = f.read(1)
 
-  print ('Read %d bytes' % (len(raw)))
+  print('Read %d bytes' % (len(raw)))
 
   program = []
-  for i in range(0, len(raw)-1, 2):
-    program.append(int.from_bytes(raw[i] + raw[i+1], byteorder='little', signed=False))
+  for i in range(0, len(raw) - 1, 2):
+    program.append(int.from_bytes(raw[i] + raw[i + 1], byteorder='little', signed=False))
 
-  print ('Instructions: %d' % (len(program)))
+  print('Instructions: %d' % (len(program)))
 
   m = Machine()
 
   m.Execute(program)
 
   print('Program Output: %s' % (m.output))
-  
+
+
 main()

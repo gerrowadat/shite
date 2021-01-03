@@ -88,7 +88,13 @@ class TidesBlob(object):
     # See if we have non-stale data to serve.
     cache_hits = [e for e in _TIDE_CACHE if e.station_id == station_id and e.date == request_date and not e.is_stale]
     if cache_hits:
-      return 'Cache hit: %d entries' % (len(cache_hits[0].tide_data))
+      cherrypy.log('Cache hit for %s on %s' % (station_name, request_date))
+      cache = cache_hits[0].tide_data
+      ret = ''
+      for e in cache:
+        ret += '%s: %s\n' % (e, cache[e])
+      return ret
+        
 
     # No Cache hit, make the request
     cherrypy.log('Accessing marine.ie for Tides for %s on %s' % (station_name, request_date))
@@ -99,4 +105,9 @@ class TidesBlob(object):
     tc = TideCacheEntry(station_name, station_id, request_date, tide_data)
     _TIDE_CACHE.append(tc)
 
-    return 'Backend hit: %d entries' % (len(tide_data))
+    cherrypy.log('Backend hit for %s on %s' % (station_name, request_date))
+    ret = ''
+    for e in tide_data:
+      ret += '%s: %s\n' % (e, tide_data[e])
+    return ret
+

@@ -143,14 +143,19 @@ class TidesBlob(object):
     return ret
 
   @cherrypy.expose
-  def today(self, station_name=None, station_id=None, date=None):
+  def today(self, station_name=None, station_id=None):
+    request_date = datetime.date.today()
+
     try:
-      request_date = self._request_date_or_today(date)
       tide_data = self._get_tide_data(station_name, station_id, request_date)
     except RequestError as e:
       return 'Request error: %s' % (str(e))
 
+    today_str = '%02d/%02d/%d' % (request_date.day, request_date.month, request_date.year)
+    cherrypy.log('[/today] showing data for %s on %s' % (station_name, today_str))
+    today_data = [d for d in tide_data.keys() if d.startswith(today_str)]
+
     ret = ''
-    for e in tide_data:
+    for e in today_data:
       ret += '%s: %s\n' % (e, tide_data[e])
     return ret

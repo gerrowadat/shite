@@ -26,6 +26,7 @@ class BusBlob(object):
 def make_like_a_teapot(*args, **kwargs):
   return '<--- handle<br/>spout --->'
 
+
 def main():
   cf = os.path.join(os.path.dirname(__file__), 'cherrypy.conf')
 

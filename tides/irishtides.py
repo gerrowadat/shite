@@ -108,7 +108,10 @@ class TidePredictionFetcher(object):
     for row in d_rows:
       d_td = row.find_all('td')
       if d_td:
-        data[d_td[0].text] = float(d_td[1].text)
+        # Website does dates as DD/MM/YYYY which can get in the sea (so to speak).
+        stupid_date = d_td[0].text
+        actual_date = datetime.datetime.strptime(stupid_date, '%d/%m/%Y %H:%M:%S')
+        data[actual_date.strftime('%Y-%m-%d %H:%M:%S')] = float(d_td[1].text)
 
     return data
 

@@ -151,7 +151,7 @@ class TidesBlob(object):
     except RequestError as e:
       return 'Request error: %s' % (str(e))
 
-    today_str = '%02d/%02d/%d' % (request_date.day, request_date.month, request_date.year)
+    today_str = '%d-%02d-%02d' % (request_date.year, request_date.month, request_date.day)
     cherrypy.log('[/today] showing data for %s on %s' % (station_name, today_str))
     today_data = [d for d in tide_data.keys() if d.startswith(today_str)]
 

@@ -93,7 +93,7 @@ class TidesBlob(object):
         raise RequestError('Unknown station %s.\n Stations Available: %s' % (
             station_name, ['%s: %s' % (x, _ID_CACHE[x]) for x in _ID_CACHE.keys()]))
       if not station_name:
-        station_name = [s_n for s_n in _ID_CACHE.keys() if _ID_CACHE[s_n] == station_name][0]
+        station_name = [s_n for s_n in _ID_CACHE.keys() if _ID_CACHE[s_n] == station_id][0]
 
     return (station_name, station_id)
 

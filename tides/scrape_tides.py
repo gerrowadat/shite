@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 STATION = 'Dublin Port'
 YEAR = 2021
 
+
 def get_station_id(station_name):
   url = 'http://webapps.marine.ie/IrishTidesChartingApplication/TidePredictions.aspx'
   rep = requests.get(url)
@@ -37,7 +38,6 @@ def get_tide_table(station, dt):
     post_data[i['name']] = i['value']
 
   post_data['lstSites'] = station
-  #post_data['SelectedDateTime'] = '01/02/2021'
   post_data['SelectedDateTime'] = '%s/%s/%s' % (dt.day, dt.month, dt.year)
 
   rep = requests.post(url, data=post_data)
@@ -59,6 +59,7 @@ def get_tide_table(station, dt):
 
   return data
 
+
 def main():
   station_id = get_station_id(STATION)
   if not station_id:
@@ -74,5 +75,6 @@ def main():
     req_date = req_date + sixdays
     for d in tides:
       print('%s,%s' % (d, tides[d]))
+
 
 main()

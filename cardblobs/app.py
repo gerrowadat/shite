@@ -1,17 +1,21 @@
+#!/usr/bin/python3
 import os
 import cherrypy
 
 import tides_blob
+
 
 class Root(object):
   @cherrypy.expose
   def index(self):
       return "Hello World!"
 
+
 class CardBlobIndex(object):
   @cherrypy.expose
   def index(self):
     return "So many card blobs."
+
 
 class BusBlob(object):
   @cherrypy.expose
@@ -28,5 +32,6 @@ def main():
   root.cardblobs.bus = BusBlob()
 
   cherrypy.quickstart(root, config=cf)
+
 
 main()

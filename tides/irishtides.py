@@ -53,7 +53,7 @@ class TidePredictionFetcher(object):
     """Given a Station Id, return its full name."""
     stations = self.GetAllStations()
     if station_id not in stations.values():
-      raise TidePredictionUsageError('unknown station <%s>' % (station_name, ))
+      raise TidePredictionUsageError('unknown station <%s>' % (station_id, ))
     all_ids = [x for x in stations.keys() if stations[x] == station_id]
     if len(all_ids) != 1:
       raise TidePredictionBackendError('got %d results for station id %d!' % (len(all_ids), station_id))
@@ -61,21 +61,21 @@ class TidePredictionFetcher(object):
 
   def GetTidePredictionForToday(self, station_name=None, station_id=None):
     return self.GetTidePredictionForDate(
-            datetime.date.today(), station_name=station_name, station_id=station_id)
+        datetime.date.today(), station_name=station_name, station_id=station_id)
 
   def GetTidePredictionForDate(self, dt, station_name=None, station_id=None):
     """Retun tide predictions for 6 days surrounding the date specified.
 
     This is the amount of data returned by marine.ie by default.
 
-    dt is a datetime.date object. 
+    dt is a datetime.date object.
 
     Returns a dict of { timestamp (str) : waterlevel (float) }
     """
     if station_id is None:
       if station_name is None:
         raise TidePredictionUsageError(
-                'must specify station_name or station_id to GetTidePredictionForDate')
+            'must specify station_name or station_id to GetTidePredictionForDate')
       else:
         station_id = self.GetStationID(station_name)
 

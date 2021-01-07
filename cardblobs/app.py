@@ -3,6 +3,7 @@ import os
 import cherrypy
 
 import tides_blob
+import sun_blob
 
 
 class Root(object):
@@ -33,6 +34,7 @@ def main():
   root = Root()
   root.cardblobs = CardBlobIndex()
   root.cardblobs.tides = tides_blob.TidesBlob()
+  root.cardblobs.sun = sun_blob.SunBlob()
   root.cardblobs.bus = BusBlob()
 
   cherrypy.config.update({'error_page.418': make_like_a_teapot})

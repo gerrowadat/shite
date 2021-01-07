@@ -1,0 +1,4 @@
+astral
+requests
+beautifulsoup4
+cherrypy

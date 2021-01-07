@@ -13,13 +13,21 @@ class Error(Exception):
 class SunBlob(object):
 
   @cherrypy.expose
-  def index(self):
-    city = LocationInfo(
-        "Dublin",
-        "Ireland",
-        latitude=53.427,
-        longitude=-6.25,
-        timezone='Europe/Dublin')
+  def index(self, latitude=None, longitude=None):
+    if latitude:
+      try:
+        latitude = float(latitude)
+      except ValueError:
+        return 'latitude must be a floating point number'
+
+    if longitude:
+      try:
+        longitude = float(longitude)
+      except ValueError:
+        return 'longitude must be a floating point number'
+
+    # Default to Dublin, Ireland
+    city = LocationInfo(latitude=(latitude or 53.427), longitude=(longitude or -6.25))
     s = sun(city.observer, datetime.date.today())
 
     ret = 'Sunrise: %s<br/>\n' % (s['sunrise'].strftime('%H:%M'))

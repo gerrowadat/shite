@@ -3,6 +3,7 @@ set -e
 
 CONFIG_DIR=/config
 CONFIG_FILE=$CONFIG_DIR/cleantweets.ini
+DAYSTOKEEP=90
 
 if [ ! -f $CONFIG_FILE ];
 then
@@ -10,5 +11,5 @@ then
 	touch $CONFIG_FILE
 fi
 
-python3 "$@" --config=$CONFIG_FILE
+python3 "$@" --verbose --delete --unlike --days=$DAYSTOKEEP --config=$CONFIG_FILE
 

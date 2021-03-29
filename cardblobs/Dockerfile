@@ -1,6 +1,4 @@
 FROM python:3.8
-RUN apt-get update
-RUN apt-get install -y python3-pip
 RUN mkdir /app
 WORKDIR /app
 RUN git clone https://github.com/gerrowadat/shite.git /app/shite

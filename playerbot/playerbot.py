@@ -24,7 +24,6 @@ def main(_):
     client = discord.Client()
     r = players.PlayerRoster(FLAGS.config_dir + '/users.txt', steam_key=steam_key, xapi_key=xapi_key)
 
-    client.run(discord_key)
 
     @client.event
     async def on_ready():
@@ -35,6 +34,7 @@ def main(_):
         logging.info('Message from %s' % (message.author, ))
         logging.info(message.content)
         if message.content == '#soundoff':
+            logging.info('Sounding off...')
             rep = []
             for p in r.players:
                 p_rep = []
@@ -47,7 +47,10 @@ def main(_):
                 if len(p_rep) == 0:
                     p_rep.append('offline')
                 rep.append('%s is %s' % (p.discordname, ' and '.join(p_rep)))
+            logging.info(', '.join(rep))
             await message.channel.send(', '.join(rep))
+
+    client.run(discord_key)
 
 
 if __name__ == '__main__':

@@ -15,3 +15,5 @@ steamid:dicordnick:xbox_gamertag
 The steam ID is in the URL bar when someone looks at their steam profile on web. Discord nick and xbox gamertag should be obvious.
 
 Them run playerbot.py --config_dir=/path/to/where/above/files/are
+
+Or, you can ```docker run -v /path/to/files:/config gerrowadat/playerbot``` If you trust me entirely or are me.

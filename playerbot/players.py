@@ -1,7 +1,13 @@
 #!/usr/bin/python3
 
 import requests
+from absl import app
+from absl import flags
 from absl import logging
+
+
+FLAGS = flags.FLAGS
+flags.DEFINE_string('config_dir', '/config/', 'Path to config and key file dir')
 
 
 class Player(object):
@@ -68,18 +74,18 @@ class PlayerRoster(object):
         return self._p
 
 
-def main():
+def main(_):
 
-    with open('steam.key') as f:
+    with open(FLAGS.config_dir + '/steam.key') as f:
         steam_key = f.read().strip('\n')
 
-    with open('xapi.key') as f:
+    with open(FLAGS.config_dir + '/xapi.key') as f:
         xapi_key = f.read().strip('\n')
 
-    roster = PlayerRoster('users.txt', xapi_key=xapi_key, steam_key=steam_key)
+    roster = PlayerRoster(FLAGS.config_dir + '/users.txt', xapi_key=xapi_key, steam_key=steam_key)
     for p in roster.players:
        print('%s: [steam] %s: [xbox] %s' % (p.discordname, p.get_steam_status(), p.get_xbox_status()))
 
 
 if __name__ == '__main__':
-    main()
+    app.run(main)

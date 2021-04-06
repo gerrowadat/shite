@@ -7,8 +7,6 @@ from absl import flags
 from absl import logging
 
 FLAGS = flags.FLAGS
-flags.DEFINE_string('config_dir', '/config/', 'Path to config and key file dir')
-
 
 def main(_):
     logging.set_verbosity(logging.DEBUG)

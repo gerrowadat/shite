@@ -51,8 +51,13 @@ class Player(object):
         url = 'https://xapi.us/v2/%s/presence' % (self.xbox_xuid(), )
         r = requests.get(url, headers={'X-AUTH': self._x_key})
         logging.debug(r.text)
-        return r.json()['state']
-
+        j = r.json()
+        if j['state'] == 'Online':
+            playing = [x for x in j['devices'][0]['titles'] if x['name'] != 'Home']
+            if not playing:
+                return ('Online', 'Home')
+            return ('Online', playing[0]['name'])
+        return ('Offline', None)
 
 class PlayerRoster(object):
     def __init__(self, playerfile, xapi_key, steam_key):

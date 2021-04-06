@@ -37,11 +37,14 @@ def main(_):
             for p in r.players:
                 p_rep = []
                 steam = p.get_steam_status()
-                xbox = p.get_xbox_status()
+                (x_on, x_playing) = p.get_xbox_status()
                 if steam:
                     p_rep.append('playing %s on PC' % (steam,))
-                if xbox != 'Offline':
-                    p_rep.append('playing the fuckin xbox')
+                if x_on != 'Offline':
+                    if x_playing == 'Home':
+                        p_rep.append('sitting at the dashboard on the xbox')
+                    else:
+                        p_rep.append('playing %s on the xbox' % (x_playing,))
                 if len(p_rep) == 0:
                     p_rep.append('offline')
                 rep.append('%s is %s' % (p.discordname, ' and '.join(p_rep)))

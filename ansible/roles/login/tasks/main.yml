@@ -1,0 +1,72 @@
+- name: Install things that make life tolerable
+  ansible.builtin.apt:
+    update-cache: yes
+    pkg:
+      - vim
+      - git-core
+      - screen
+      - rsync
+      - python3-pip
+
+- name: Grab my rc files
+  become: true
+  become_user : '{{ ansible_user }}'
+  ansible.builtin.git:
+    repo: 'https://github.com/gerrowadat/rcfiles.git'
+    dest: '/home/{{ ansible_user }}/.rcfiles'
+
+- name: Symlink .vimrc to git version
+  become: yes
+  become_user: '{{ ansible_user }}'
+  ansible.builtin.file:
+    src: '/home/{{ ansible_user }}/.rcfiles/vimrc'
+    dest: '/home/{{ ansible_user }}/.vimrc'
+    state: link
+
+- name: Create ~/.backup for vim
+  ansible.builtin.file:
+    path: '/home/{{ ansible_user }}/.backup'
+    state: directory
+    owner: '{{ ansible_user }}'
+    group: '{{ ansible_user }}'
+    mode: '0700'
+
+- name: Install Vundle files
+  become: true
+  become_user: '{{ ansible_user }}'
+  ansible.builtin.git:
+    repo: 'https://github.com/VundleVim/Vundle.vim.git'
+    dest: '/home/{{ ansible_user }}/.vim/bundle/Vundle.vim'
+
+- name: Initialise vundle
+  command: /usr/bin/vim +PluginInstall +qall
+  become: true
+  become_user: '{{ ansible_user }}'
+
+- name: set default editor on the system
+  command: /usr/bin/update-alternatives --set editor /usr/bin/vim.basic
+
+- name: Set selected editor for the user.
+  become: yes
+  become_user: '{{ ansible_user }}'
+  ansible.builtin.file:
+    src: '/home/{{ ansible_user }}/.rcfiles/selected_editor'
+    dest: '/home/{{ ansible_user }}/.selected_editor'
+    state: link
+
+- name: Symlink .bash_aliases to git version
+  become: yes
+  become_user: '{{ ansible_user }}'
+  ansible.builtin.file:
+    src: '/home/{{ ansible_user }}/.rcfiles/bash_aliases'
+    dest: '/home/{{ ansible_user }}/.bash_aliases'
+    state: link
+
+- name: Symlink .gitconfig to git version
+  become: yes
+  become_user: '{{ ansible_user }}'
+  ansible.builtin.file:
+    src: '/home/{{ ansible_user }}/.rcfiles/gitconfig'
+    dest: '/home/{{ ansible_user }}/.gitconfig'
+    state: link
+

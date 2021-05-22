@@ -21,3 +21,5 @@ ansible-playbook -i inventory.yml site.yml
 ```
 
 Ansible really likes directories, the file you probably want to look at is roles/login/tasks/main.yml for now.
+
+Note: You probably shouldn't use this, this is me learnign about ansible, so there are better ways out there.

@@ -70,3 +70,11 @@
     dest: '/home/{{ ansible_user }}/.gitconfig'
     state: link
 
+- name:  Allow use of .bashrc.local
+  ansible.builtin.blockinfile:
+    path: '/home/{{ ansible_user }}/.bashrc'
+    block: |
+      if [ -f ~/.bashrc.local ]; then
+        . ~/.bashrc.local
+      fi
+

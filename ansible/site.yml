@@ -13,3 +13,12 @@
   become_user: root
   roles:
     - nomad
+
+- name: consul servers
+  hosts: consul
+  any_errors_fatal: true
+  become: true
+  become_user: root
+  roles:
+    - consul
+

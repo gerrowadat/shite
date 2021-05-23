@@ -9,19 +9,25 @@
   become: true
   become_user : '{{ ansible_user }}'
   ansible.builtin.get_url:
-    url: 'https://releases.hashicorp.com/nomad/{{ nomad_version }}/nomad_{{ nomad_version }}_linux_{{ nomad_arch }}.zip'
+    url: 'https://releases.hashicorp.com/nomad/{{ nomad_version }}/nomad_{{ nomad_version }}_linux_{{ download_arch }}.zip'
     dest: '/home/{{ ansible_user }}/download/'
 
 - name: Unzip nomad binary.
   ansible.builtin.unarchive:
     remote_src: yes
-    src: '/home/{{ ansible_user }}/download/nomad_{{ nomad_version }}_linux_{{ nomad_arch }}.zip'
+    src: '/home/{{ ansible_user }}/download/nomad_{{ nomad_version }}_linux_{{ download_arch }}.zip'
     dest: '/usr/local/bin/'
 
 - name: Create /opt/nomad
   ansible.builtin.file:
     path: '/opt/nomad'
     state: directory
+
+- name: Create /local
+  ansible.builtin.file:
+    path: '/local'
+    state: directory
+
 
 - name: Create nomad rc file
   ansible.builtin.copy:

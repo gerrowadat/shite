@@ -2,7 +2,7 @@ name: Flake8 linter
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths:
     - '**.py'
     - '!doc/**'

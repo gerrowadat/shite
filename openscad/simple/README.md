@@ -3,7 +3,7 @@ Some simple bits for simple jobs.
 
 ## lbracket 
 
-![Model](model.png)
+![Model](lbracket.png)
 
 To use:
   - Download roundedcube.scad from the [gist](https://gist.github.com/groovenectar/92174cb1c98c1089347e)

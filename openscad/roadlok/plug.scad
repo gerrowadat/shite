@@ -1,3 +1,4 @@
+cylinder(h=3, d=23, center=false);
 cylinder(h=51,d=13,center=false);
 cylinder(h=22.5,d=20,center=false);
 cylinder(h=38, d=18, center=false);

@@ -14,7 +14,7 @@ class WebComic(object):
     def __init__(self, name, url):
         self._name = name
         self._url = url
-        self._img_url = None
+        self._comic_img_url = None
 
     @property
     def name(self):
@@ -27,8 +27,8 @@ class WebComic(object):
     @property
     def comic_img_url(self):
         """Return the URL of the largest image (by area) on the page."""
-        if self._img_url:
-            return self._img_url
+        if self._comic_img_url:
+            return self._comic_img_url
         all_img = self._all_image_urls()
         largest_img = None
         largest_area = 0
@@ -37,7 +37,8 @@ class WebComic(object):
             if i_area > largest_area:
                 largest_area = i_area
                 largest_img = i
-        return largest_img
+        self._comic_img_url = largest_img
+        return self._comic_img_url
 
     def _all_image_urls(self):
         """A set of all <img> tag targets."""

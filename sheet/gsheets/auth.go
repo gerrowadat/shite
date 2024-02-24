@@ -17,6 +17,13 @@ import (
 
 // Retrieve a token, saves the token, then returns the generated client.
 func GetClient(secretfile string, tokfile string) *http.Client {
+	// Default to flags as passed in, fall back to environment.
+	if secretfile == "" {
+		secretfile = os.Getenv("SHEET_CLIENTSECRET_FILE")
+	}
+	if tokfile == "" {
+		tokfile = os.Getenv("SHEET_TOKEN_FILE")
+	}
 	// The file token.json stores the user's access and refresh tokens, and is
 	// created automatically when the authorization flow completes for the first
 	// time.

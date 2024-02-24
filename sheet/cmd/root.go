@@ -31,6 +31,6 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVar(&clientSecretFile, "clientsecretfile", "sheets.key.json", "Client secret file")
-	rootCmd.PersistentFlags().StringVar(&authTokenFile, "authtokenfile", "token.json", "where to store our oauth token")
+	rootCmd.PersistentFlags().StringVar(&clientSecretFile, "clientsecretfile", "", "Client secret file")
+	rootCmd.PersistentFlags().StringVar(&authTokenFile, "authtokenfile", "", "where to store our oauth token")
 }

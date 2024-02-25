@@ -14,6 +14,9 @@ sheet get SpReAdShEeTiDfRoMUrL 'myworksheet!B3:F8'
 
 # Print the last 5 populated rows of a worksheet
 sheet tail SpReAdShEeTiDfRoMUrL 'myworksheet' 5
+
+# List the worksheets in the specified sheet
+sheet ls SpReAdShEeTiDfRoMUrL 
 ```
 
 See `sheet help get` for flags, you'll need a client secret file, per the docs.
@@ -31,6 +34,5 @@ sheet replace/append <id> <worksheet>
 # Etc.
 sheet touch
 sheet rm
-sheet ls
 sheet cp
 ```

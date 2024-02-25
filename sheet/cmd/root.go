@@ -1,14 +1,43 @@
 package cmd
 
 import (
+	"errors"
 	"os"
 
 	"github.com/spf13/cobra"
 )
 
+// Implement an enum-a-like for the output-format flag
+type OutputFormatValue interface {
+	String() string
+	Set(string) error
+	Type() string
+}
+
+type OutputFormat string
+
+const (
+	csvFormat OutputFormat = "csv"
+	tsvFormat OutputFormat = "tsv"
+)
+
+func (f *OutputFormat) String() string { return string(*f) }
+func (f *OutputFormat) Type() string   { return "OutputFormat" }
+func (f *OutputFormat) Set(v string) error {
+	switch v {
+	case "csv", "tsv":
+		*f = OutputFormat(v)
+		return nil
+	default:
+		return errors.New("invalid OutputFormat. Allowed [csv|tsv]")
+	}
+}
+
 var (
+	outputFormat     = csvFormat
 	clientSecretFile string
 	authTokenFile    string
+	chunkSize        int
 
 	rootCmd = &cobra.Command{
 		Use:   "sheet",
@@ -33,4 +62,7 @@ func Execute() {
 func init() {
 	rootCmd.PersistentFlags().StringVar(&clientSecretFile, "clientsecretfile", "", "Client secret file")
 	rootCmd.PersistentFlags().StringVar(&authTokenFile, "authtokenfile", "", "where to store our oauth token")
+
+	rootCmd.PersistentFlags().IntVar(&chunkSize, "read-chunksize", 100, "How many rows at a time to read while fetching data")
+	rootCmd.PersistentFlags().Var(&outputFormat, "output-format", "Output format ([csv|tsv])")
 }

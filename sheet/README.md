@@ -17,9 +17,12 @@ sheet tail SpReAdShEeTiDfRoMUrL 'myworksheet' 5
 
 # List the worksheets in the specified sheet
 sheet ls SpReAdShEeTiDfRoMUrL 
+
+# Output an entire worksheet
+sheet ls SpReAdShEeTiDfRoMUrL myworksheet
 ```
 
-See `sheet help get` for flags, you'll need a client secret file, per the docs.
+See `sheet help get` (and so on) for flags, you'll need a client secret file, per the docs.
 
 TODO:
 

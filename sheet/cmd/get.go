@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 
@@ -12,36 +11,9 @@ import (
 	"google.golang.org/api/sheets/v4"
 )
 
-// Implement an enum-a-like for the output-format flag
-type OutputFormatValue interface {
-	String() string
-	Set(string) error
-	Type() string
-}
-
-type OutputFormat string
-
-const (
-	csvFormat OutputFormat = "csv"
-	tsvFormat OutputFormat = "tsv"
-)
-
-func (f *OutputFormat) String() string { return string(*f) }
-func (f *OutputFormat) Type() string   { return "OutputFormat" }
-func (f *OutputFormat) Set(v string) error {
-	switch v {
-	case "csv", "tsv":
-		*f = OutputFormat(v)
-		return nil
-	default:
-		return errors.New("invalid OutputFormat. Allowed [csv|tsv]")
-	}
-}
-
 // getCmd represents the get command
 var (
-	outputFormat = csvFormat
-	getCmd       = &cobra.Command{
+	getCmd = &cobra.Command{
 		Args: func(cmd *cobra.Command, args []string) error {
 			// Need exactly 2 args (sheet ID and data range)
 			if err := cobra.ExactArgs(2)(cmd, args); err != nil {
@@ -67,9 +39,6 @@ var (
 
 func init() {
 	rootCmd.AddCommand(getCmd)
-
-	getCmd.PersistentFlags().Var(&outputFormat, "output-format", "Output format ([csv|tsv])")
-
 }
 
 func doGet(cmd *cobra.Command, args []string) {

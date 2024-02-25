@@ -15,8 +15,7 @@ import (
 
 // tailCmd represents the tail command
 var (
-	chunkSize int
-	tailCmd   = &cobra.Command{
+	tailCmd = &cobra.Command{
 		Args: func(cmd *cobra.Command, args []string) error {
 			// Need exactly 2 args (sheet ID and data range)
 			if err := cobra.ExactArgs(3)(cmd, args); err != nil {
@@ -43,7 +42,6 @@ var (
 
 func init() {
 	rootCmd.AddCommand(tailCmd)
-	tailCmd.PersistentFlags().IntVar(&chunkSize, "chunksize", 100, "How many rows at a time to read while searching for end of data")
 }
 
 func doTail(cmd *cobra.Command, args []string) {
